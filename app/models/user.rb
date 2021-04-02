@@ -7,14 +7,16 @@ class User < ApplicationRecord
     has_secure_password
     
     has_many :microposts
+    #フォロー機能用
     has_many :relationships
     has_many :followings, through: :relationships, source: :follow
     has_many :reverses_of_relationship, class_name: "Relationship", foreign_key: "follow_id"
     has_many :followers, through: :reverses_of_relationship, source: :user
-    #ここからお気に入り機能
+    #お気に入り機能用
     has_many :favorites
     has_many :likes, through: :favorites, source: :micropost
     
+    #フォロー機能用
     def follow(other_user)
         unless self == other_user
             self.relationships.find_or_create_by(follow_id: other_user.id)
@@ -34,7 +36,7 @@ class User < ApplicationRecord
         Micropost.where(user_id: self.following_ids + [self.id])
     end
     
-    #ここからお気に入り機能
+    #お気に入り機能用
     def favorite(micropost)
         self.favorites.find_or_create_by(micropost_id: micropost.id)
     end
